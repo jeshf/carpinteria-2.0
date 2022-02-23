@@ -23,12 +23,12 @@ class ImageSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Image
         fields = '__all__'
-    def create(self, validated_data):
-        if not validated_data.get('imagePath'):
-            raise serializers.ValidationError('Selecciona una imagen')
-        instance = super(ImageSerializer, self).create(validated_data)
-        instance.save()
-        return instance
+    #def create(self, validated_data):
+        #if not validated_data.get('imagePath'):
+            #raise serializers.ValidationError('Selecciona una imagen')
+        #instance = super(ImageSerializer, self).create(validated_data)
+        #instance.save()
+        #return instance
 class ResponseSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Response
