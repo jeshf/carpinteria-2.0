@@ -51,10 +51,10 @@
             <input type="text" placeholder="Busca un trabajo" name="name">
             <button type="submit"><i class="fa fa-search"></i></button>
             </form></a></li>
-              {% if username != None %}
-                  <li style="background: transparent"><a href="/api/client/services/"style="background: transparent"><form method="POST" action="/api/logout/"><strong>Tus trabajos: {{ username }}</strong>{% csrf_token %}
+              {% if user != None %}
+                  <li style="background: transparent">{% if user.is_superuser %}<a href="/api/newpost/"style="background: transparent"><form method="POST" action="/api/logout/"><strong>Sitio Admin:
+                     {% else %} <a href="/api/client/services/"style="background: transparent"><form method="POST" action="/api/logout/"><strong>Tus trabajos:{% endif%} {{ user.username }}</strong> {% csrf_token %}
                       <input type="submit" value="Cerrar sesión" class="bg-info"></form></a></li>
-
               {% endif %}
           </ul>
         </div>

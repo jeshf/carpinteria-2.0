@@ -43,9 +43,9 @@ def image(request,pk):
     formr = ResponseForm()
     formar = CommentRepliesForm()
     template = get_template('image.html')
-    username = request.user.username
-    if not username:
-        username = None
+    user = request.user
+    if not user.username:
+        user = None
     comr=list()
     isBreak= True
     try:
@@ -68,7 +68,7 @@ def image(request,pk):
             replies = 0
     if request.method=='GET':
         html = template.render({'img': img, 'post': post, 'comment':comment, 'form':form, 'formr':formr,
-                        'comr':comr,'replies':replies,'formar':formar,'username':username }, request)
+                        'comr':comr,'replies':replies,'formar':formar,'user':user }, request)
         return HttpResponse(html)
 
     elif request.method == 'POST':
@@ -149,20 +149,20 @@ def addimages(request,pk):
 def home(request):
     template = get_template('home.html')
     img=Image.objects.all()[0:8]
-    username = request.user.username
-    if not username:
-        username = None
+    user = request.user
+    if not user.username:
+        user = None
     if request.method=='GET':
-        html = template.render({'img': img, 'username':username}, request)
+        html = template.render({'img': img, 'user':user}, request)
         return HttpResponse(html)
 def about(request):
     template = get_template('about.html')
     img=Image.objects.all()[0:8]
-    username = request.user.username
-    if not username:
-        username = None
+    user = request.user
+    if not user.username:
+        user = None
     if request.method=='GET':
-        html = template.render({'img': img, 'username':username}, request)
+        html = template.render({'img': img, 'user':user}, request)
         return HttpResponse(html)
 #create a new post and retrieve all posts
 @login_required
@@ -283,13 +283,12 @@ def payments(request,pk):
     else:
         return HttpResponse('Forbidden access', status=403)
 @login_required
-def clientpayments(request,pk):
+def clientpayments(request,pk): #falta corregir el duplicado de la variable u es la misma que user
     ser = Service.objects.get(pk=pk)
     payments = Payment.objects.filter(service=ser)
-    u = ser.user
-    username = request.user.username
-    if not username:
-        username = None
+    user = request.user
+    if not user.username:
+        user = None
     if payments:
         pay = payments[0]
         for paym in payments:
@@ -299,7 +298,7 @@ def clientpayments(request,pk):
         payments=0
     template = get_template('clientpayments.html')
     if request.method == 'GET':
-        html = template.render({'pay':pay,'ser': ser, 'u': u, 'payments': payments, 'username': username},request)
+        html = template.render({'pay':pay,'ser': ser, 'payments': payments, 'user': user},request)
         return HttpResponse(html)
     #retrieve all users to access their services
 @login_required
@@ -349,12 +348,11 @@ def allposts(request):
     allposts = Post.objects.all()
     images = Image.objects.all()
     sform = SearchForm()
-
-    username = request.user.username
-    if not username:
-        username = None
+    user = request.user
+    if not user.username:
+        user = None
     if request.method=='GET':
-        html = template.render({'images':images,'allposts':allposts,'username':username,'sform':sform }, request)
+        html = template.render({'images':images,'allposts':allposts,'user':user,'sform':sform }, request)
         return HttpResponse(html)
     elif request.method == 'POST':
         name=request.POST['name']
@@ -363,15 +361,15 @@ def allposts(request):
         if allposts.count == 0:
             allposts = 0
         sform = SearchForm()
-        html = template.render({'images': images, 'allposts':allposts, 'username': username, 'sform': sform}, request)
+        html = template.render({'images': images, 'allposts':allposts, 'user': user, 'sform': sform}, request)
         return HttpResponse(html)
 def contact(request):
     template = get_template('contacto.html')
-    username = request.user.username
-    if not username:
-        username = None
+    user = request.user
+    if not user.username:
+        user = None
     if request.method=='GET':
-        html = template.render({'username':username }, request)
+        html = template.render({'user':user }, request)
         return HttpResponse(html)
 
 @login_required
@@ -442,32 +440,31 @@ class Login(APIView):
                     serializer.save()
                 return HttpResponseRedirect("/api/login/")
             else:
-                username = request.user.username
-                if not username:
-                    username = None
+                user = request.user
+                if not user.username:
+                    user = None
                 form = SignInForm()
-                return render(request, 'login.html', {'form': form,'formu':formu,'username':username  })
+                return render(request, 'login.html', {'form': form,'formu':formu,'user':user  })
         else:
             return HttpResponse('Bad Request', status=400)
     def get(self, request, format=None):
-        username = request.user.username
-        if not username:
-            username = None
+        user = request.user
+        if not user.username:
+            user = None
         formu = SignUpForm()
         form = SignInForm()
-        return render(request, 'login.html', {'form': form,'formu':formu,'username':username  })
+        return render(request, 'login.html', {'form': form,'formu':formu,'user':user  })
 @login_required
-def clientservices(request):
-    u = request.user
-    services = Service.objects.filter(user=u)
-    username = u.username
-    if not username:
-        username = None
+def clientservices(request): #corregir duplicado también u y username
+    user = request.user
+    services = Service.objects.filter(user=user)
+    if not user.username:
+        user = None
     if not services:
         services = None
     template = get_template('clientservices.html')
     if request.method == 'GET':
-        html = template.render({'services': services, 'u': u, 'username': username}, request)
+        html = template.render({'services': services, 'user': user}, request)
         return HttpResponse(html)
 class UserViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser)

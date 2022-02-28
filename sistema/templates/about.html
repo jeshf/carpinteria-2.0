@@ -45,10 +45,10 @@
             <li><a href="/api/contact/">Contacto</a></li>
             <li><a href="/api/login/">Inicia sesión o registrate</a></li>
               <li><a href="/api/allposts/">Servicios y trabajos</a></li>
-              {% if username != None %}
-                  <li style="background: transparent"><a href="/api/client/services/"style="background: transparent"><form method="POST" action="/api/logout/"><strong>Tus trabajos: {{ username }}</strong>{% csrf_token %}
+              {% if user != None %}
+                  <li style="background: transparent">{% if user.is_superuser %}<a href="/api/newpost/"style="background: transparent"><form method="POST" action="/api/logout/"><strong>Sitio Admin:
+                     {% else %} <a href="/api/client/services/"style="background: transparent"><form method="POST" action="/api/logout/"><strong>Tus trabajos:{% endif%} {{ user.username }}</strong> {% csrf_token %}
                       <input type="submit" value="Cerrar sesión" class="bg-info"></form></a></li>
-
               {% endif %}
           </ul>
         </div>
